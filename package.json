@@ -1,0 +1,16 @@
+{
+  "name": "paperlane",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Turn photographed paperwork into clean, redacted JSON with small SIE models.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "text": "node index.js text",
+    "intake": "node index.js intake",
+    "demo": "node index.js intake samples/receipt-photo.png --schema receipt && node index.js intake samples/fax-intake.png --schema intake"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "merchant": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "date": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "receipt_no": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "total": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "currency": { "anyOf": [{ "type": "string" }, { "type": "null" }] }
+  },
+  "required": ["merchant", "date", "receipt_no", "total", "currency"],
+  "additionalProperties": false
+}

@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "full_name": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "date_of_birth": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "phone": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "email": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "address": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "insurance_no": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "referred_by": { "anyOf": [{ "type": "string" }, { "type": "null" }] }
+  },
+  "required": [
+    "full_name",
+    "date_of_birth",
+    "phone",
+    "email",
+    "address",
+    "insurance_no",
+    "referred_by"
+  ],
+  "additionalProperties": false
+}
