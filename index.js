@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 
 import { loadEnv } from "./src/env.js";
 import { intake, transcribe } from "./src/intake.js";
+import { countRows, parseTables } from "./src/tables.js";
 
 loadEnv();
 
@@ -12,9 +13,10 @@ const USAGE = `paperlane — read photographed paperwork into clean, redacted JS
 
   node index.js text   <image>                         transcribe only
   node index.js intake <image> --schema <name|file>    transcribe, extract, redact
+  node index.js table  <image>                         HTML tables -> JSON rows
 
 Options
-  --as photo|page     photo = GLM-OCR (default), page = LightOnOCR-3
+  --as photo|page     photo = GLM-OCR (default), page = LightOnOCR-3 (table default)
   --schema receipt    schemas/receipt.json
   --schema intake     schemas/intake.json
   --schema ./my.json  your own JSON schema
@@ -76,8 +78,28 @@ async function main() {
   if (!file) throw new Error("no image given");
   if (!existsSync(file)) throw new Error(`no such file: ${file}`);
 
-  const as = flag(argv, "as", "photo");
+  const as = flag(argv, "as", command === "table" ? "page" : "photo");
   if (as !== "photo" && as !== "page") throw new Error("--as must be photo or page");
+
+  if (command === "table") {
+    // A saved page can be re-parsed for free: OCR output is just Markdown.
+    const saved = /\.(md|markdown|txt)$/i.test(file);
+    const result = saved ? { text: await readFile(file, "utf8"), steps: [] } : await transcribe(file, as);
+    const parsed = parseTables(result.text);
+
+    console.log(`${file}  (${saved ? "saved markdown" : as})\n`);
+    if (result.steps.length) console.log(`${table(result.steps, {}, as)}\n`);
+
+    if (parsed.length === 0) {
+      console.log("no <table> in this page's Markdown. Try --as page, or the page has no ruled table.\n");
+      process.exitCode = 1;
+      return;
+    }
+
+    console.log(`${JSON.stringify({ tables: parsed }, null, 2)}\n`);
+    console.log(`${parsed.length} table(s), ${countRows(parsed)} row(s)`);
+    return;
+  }
 
   if (command === "text") {
     const { text, steps } = await transcribe(file, as);

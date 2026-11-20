@@ -11,6 +11,8 @@
   "scripts": {
     "text": "node index.js text",
     "intake": "node index.js intake",
+    "table": "node index.js table",
+    "test": "node --test",
     "demo": "node index.js intake samples/receipt-photo.png --schema receipt && node index.js intake samples/fax-intake.png --schema intake"
   }
 }
