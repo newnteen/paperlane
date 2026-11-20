@@ -154,6 +154,45 @@ Terms net 30. Questions: accounts@northgate-supply.example
 (Table rows collapsed onto one line here to keep the README readable; the real
 output is one cell per line.)
 
+### Tables become rows, with no second model call
+
+The page scan already arrives as Markdown with `<table>` blocks, so the structure
+is in the text. Sending that to a chat model to "read the table" would only add a
+call and a chance of invented numbers. `table` parses it instead:
+
+```bash
+node index.js table samples/statement-table.png        # OCR first
+node index.js table page.md                            # or a page you already saved
+```
+
+```
+$ node index.js table test/fixtures/statement-table.md
+test/fixtures/statement-table.md  (saved markdown)
+
+{
+  "tables": [
+    {
+      "headers": ["Line", "Part", "Qty", "Unit", "Amount"],
+      "rows": [
+        { "Line": "1", "Part": "Bearing 6203-2RS", "Qty": "40", "Unit": "3.15", "Amount": "126.00" },
+        { "Line": "2", "Part": "Seal kit SK-220", "Qty": "12", "Unit": "8.40", "Amount": "100.80" },
+        ...
+      ]
+    }
+  ]
+}
+
+1 table(s), 6 row(s)
+```
+
+Values stay strings, so a part number like `007` keeps its leading zero. A table
+with no header row comes back positional (`["Subtotal", "772.80"]`) instead of
+being given invented column names.
+
+Parsing a saved page is free and deterministic, which is why `test/` can check it:
+`npm test` runs the parser over a real LightOnOCR page and asserts the six line
+amounts still add up to the subtotal printed on the page.
+
 ## Notes
 
 - **Cold starts are real.** A model that is not loaded answers `503` with
